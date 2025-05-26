@@ -1,0 +1,31 @@
+1й запрос
+CREATE VIEW occupancy_stats_view AS
+SELECT 
+    p.category_id,
+    pc.category_name,
+    COUNT(p.property_id) AS total_properties,
+    SUM(CASE WHEN p.status = 'Occupied' THEN 1 ELSE 0 END) AS occupied,
+    ROUND(SUM(CASE WHEN p.status = 'Occupied' THEN 1 ELSE 0 END) / COUNT(p.property_id) * 100, 2) AS occupancy_rate,
+    SUM(p.monthly_price) AS potential_income
+FROM 
+    properties p
+JOIN 
+    property_categories pc ON p.category_id = pc.category_id
+GROUP BY 
+    p.category_id, pc.category_name;
+
+
+2й запрос
+SELECT 
+    YEAR(payment_date) AS year,
+    MONTH(payment_date) AS month,
+    COUNT(*) AS payments_count,
+    SUM(amount) AS total_amount
+FROM 
+    payments
+WHERE 
+    status = 'Paid'
+GROUP BY 
+    YEAR(payment_date), MONTH(payment_date)
+ORDER BY 
+    year DESC, month DESC;
